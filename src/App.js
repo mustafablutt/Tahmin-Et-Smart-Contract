@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {ethers} from 'ethers';
-import {contractAbi, contractAddress} from './Constant/constant';
+import {contractAbi,contract2Abi,contractAddress2, contractAddress} from './Constant/constant';
 import Login from './Components/Login';
 import Finished from './Components/Finished';
 import Connected from './Components/Connected';
@@ -11,94 +11,74 @@ function App() {
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [votingStatus, setVotingStatus] = useState(true);
-  const [remainingTime, setremainingTime] = useState('');
+  const [remainingTime, setRemainingTime] = useState('');
   const [candidates, setCandidates] = useState([]);
   const [number, setNumber] = useState('');
   const [CanVote, setCanVote] = useState(true);
+  const [selectedContract, setSelectedContract] = useState(1); // 1 for first contract, 2 for second contract
 
+  const currentAbi = selectedContract === 1 ? contractAbi : contract2Abi;
+  const currentAddress = selectedContract === 1 ? contractAddress : contractAddress2;
 
-  useEffect( () => {
+  useEffect(() => {
     getCandidates();
     getRemainingTime();
     getCurrentStatus();
+    canVote();
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
     }
 
-    return() => {
+    return () => {
       if (window.ethereum) {
         window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
       }
     }
-  });
+  }, [selectedContract]);
 
-
-  async function vote() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract (
-        contractAddress, contractAbi, signer
-      );
-
-      const tx = await contractInstance.vote(number);
-      await tx.wait();
-      canVote();
+  async function connectToContract() {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    return new ethers.Contract(currentAddress, currentAbi, signer);
   }
 
+  async function vote() {
+    const contractInstance = await connectToContract();
+    const tx = await contractInstance.vote(number);
+    await tx.wait();
+    canVote();
+  }
 
   async function canVote() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract (
-        contractAddress, contractAbi, signer
-      );
-      const voteStatus = await contractInstance.voters(await signer.getAddress());
-      setCanVote(voteStatus);
-
+    const contractInstance = await connectToContract();
+    const voteStatus = await contractInstance.voters(await contractInstance.signer.getAddress());
+    setCanVote(voteStatus);
   }
 
   async function getCandidates() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract (
-        contractAddress, contractAbi, signer
-      );
-      const candidatesList = await contractInstance.getAllVotesOfCandiates();
-      const formattedCandidates = candidatesList.map((candidate, index) => {
-        return {
-          index: index,
-          name: candidate.name,
-          voteCount: candidate.voteCount.toNumber()
-        }
-      });
-      setCandidates(formattedCandidates);
+    const contractInstance = await connectToContract();
+    const candidatesList = await contractInstance.getAllVotesOfCandiates();
+    const formattedCandidates = candidatesList.map((candidate, index) => {
+      return {
+        index: index,
+        name: candidate.name,
+        voteCount: candidate.voteCount.toNumber()
+      }
+    });
+    setCandidates(formattedCandidates);
   }
 
-
   async function getCurrentStatus() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract (
-        contractAddress, contractAbi, signer
-      );
-      const status = await contractInstance.getVotingStatus();
-      console.log(status);
-      setVotingStatus(status);
+    const contractInstance = await connectToContract();
+    const status = await contractInstance.getVotingStatus();
+    setVotingStatus(status);
   }
 
   async function getRemainingTime() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract (
-        contractAddress, contractAbi, signer
-      );
-      const time = await contractInstance.getRemainingTime();
-      setremainingTime(parseInt(time, 16));
+    const contractInstance = await connectToContract();
+    const time = await contractInstance.getRemainingTime();
+    setRemainingTime(parseInt(time, 16));
   }
 
   function handleAccountsChanged(accounts) {
@@ -120,7 +100,6 @@ function App() {
         const signer = provider.getSigner();
         const address = await signer.getAddress();
         setAccount(address);
-        console.log("Metamask Connected : " + address);
         setIsConnected(true);
         canVote();
       } catch (err) {
@@ -135,8 +114,15 @@ function App() {
     setNumber(e.target.value);
   }
 
+  function selectContract(contractNumber) {
+    setSelectedContract(contractNumber);
+  }
+
   return (
     <div className="App">
+      <button onClick={() => selectContract(1)}>First Voting</button>
+      <button onClick={() => selectContract(2)}>Second Voting</button>
+
       { votingStatus ? (isConnected ? (<Connected 
                       account = {account}
                       candidates = {candidates}
@@ -152,13 +138,6 @@ function App() {
       
     </div>
   );
-
-
-
 }
-
-
-
-
 
 export default App;
