@@ -10,27 +10,27 @@ const Connected = (props) => {
                 <p className="connected-account">You have already voted</p>
             ) : (
                 <div>
-                    <input type="number" placeholder="Entern Candidate Index" value={props.number} onChange={props.handleNumberChange}></input>
-            <br />
-            <button className="login-button" onClick={props.voteFunction}>Vote</button>
-
+                    
+                    <input type="number" value={props.number} onChange={props.handleNumberChange} placeholder="Senet İndexi: " />
+                    <input type="number" value={props.buyShares} onChange={props.handleBuySharesChange} placeholder="Almak İstediğiniz Senet Sayısı: " />   
+            <button className="login-button" onClick={props.buySharesFunction} >Satın Al</button>
                 </div>
             )}
             
             <table id="myTable" className="candidates-table">
                 <thead>
                 <tr>
-                    <th>Index</th>
-                    <th>Candidate name</th>
-                    <th>Candidate votes</th>
+                    <th>Senet Numarası</th>
+                    <th>Senet İsmi</th>
+                    <th>Senet Sayısı</th>
                 </tr>
                 </thead>
                 <tbody>
-                {props.candidates.map((candidate, index) => (
+                {props.stocks.map((stock, index) => (
                     <tr key={index}>
-                    <td>{candidate.index}</td>
-                    <td>{candidate.name}</td>
-                    <td>{candidate.voteCount}</td>
+                    <td>{stock.index}</td>
+                    <td>{stock.name}</td>
+                    <td>{stock.voteCount}</td>
                     </tr>
                 ))}
                 </tbody>

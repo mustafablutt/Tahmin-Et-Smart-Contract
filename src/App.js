@@ -1,30 +1,33 @@
 import { useState, useEffect } from 'react';
-import {ethers} from 'ethers';
-import {contractAbi,contract2Abi,contractAddress2, contractAddress} from './Constant/constant';
+import { ethers } from 'ethers';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Nav, Navbar } from 'react-bootstrap';
+
+import { contractAbi, contract2Abi, contractAddress2, contractAddress } from './Constant/constant';
 import Login from './Components/Login';
 import Finished from './Components/Finished';
 import Connected from './Components/Connected';
 import './App.css';
 
+
 function App() {
   const [provider, setProvider] = useState(null);
   const [account, setAccount] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [votingStatus, setVotingStatus] = useState(true);
+  const [marketStatus, setMarketStatus] = useState(true);
   const [remainingTime, setRemainingTime] = useState('');
-  const [candidates, setCandidates] = useState([]);
+  const [stocks, setStocks] = useState([]);
   const [number, setNumber] = useState('');
-  const [CanVote, setCanVote] = useState(true);
+  const[buyShares,setBuyShares] = useState('');
   const [selectedContract, setSelectedContract] = useState(1); // 1 for first contract, 2 for second contract
 
   const currentAbi = selectedContract === 1 ? contractAbi : contract2Abi;
   const currentAddress = selectedContract === 1 ? contractAddress : contractAddress2;
 
   useEffect(() => {
-    getCandidates();
+    getStocks();
     getRemainingTime();
     getCurrentStatus();
-    canVote();
     if (window.ethereum) {
       window.ethereum.on('accountsChanged', handleAccountsChanged);
     }
@@ -43,36 +46,39 @@ function App() {
     return new ethers.Contract(currentAddress, currentAbi, signer);
   }
 
+
   async function vote() {
+    if(number === '' || buyShares === ''){
+      alert('Please enter both candidate index and number of votes');
+      return;
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
     const contractInstance = await connectToContract();
-    const tx = await contractInstance.vote(number);
+    // Here we send the vote transaction with the number of votes as parameter.
+    const tx = await contractInstance.buyShares(number, buyShares);
     await tx.wait();
-    canVote();
   }
 
-  async function canVote() {
-    const contractInstance = await connectToContract();
-    const voteStatus = await contractInstance.voters(await contractInstance.signer.getAddress());
-    setCanVote(voteStatus);
-  }
 
-  async function getCandidates() {
+  async function getStocks() {
     const contractInstance = await connectToContract();
-    const candidatesList = await contractInstance.getAllVotesOfCandiates();
-    const formattedCandidates = candidatesList.map((candidate, index) => {
+    const stocksList = await contractInstance.getAllSharesOfStocks();
+    const formattedStocks = stocksList.map((stock, index) => {
       return {
         index: index,
-        name: candidate.name,
-        voteCount: candidate.voteCount.toNumber()
+        name: stock.name,
+        voteCount: stock.shareCount.toNumber()
       }
     });
-    setCandidates(formattedCandidates);
+    setStocks(formattedStocks);
   }
 
   async function getCurrentStatus() {
     const contractInstance = await connectToContract();
-    const status = await contractInstance.getVotingStatus();
-    setVotingStatus(status);
+    const status = await contractInstance.getMarketStatus();
+    setMarketStatus(status);
   }
 
   async function getRemainingTime() {
@@ -84,7 +90,6 @@ function App() {
   function handleAccountsChanged(accounts) {
     if (accounts.length > 0 && account !== accounts[0]) {
       setAccount(accounts[0]);
-      canVote();
     } else {
       setIsConnected(false);
       setAccount(null);
@@ -101,7 +106,6 @@ function App() {
         const address = await signer.getAddress();
         setAccount(address);
         setIsConnected(true);
-        canVote();
       } catch (err) {
         console.error(err);
       }
@@ -117,25 +121,43 @@ function App() {
   function selectContract(contractNumber) {
     setSelectedContract(contractNumber);
   }
+  async function handleBuySharesChange(e){
+    setBuyShares(e.target.value);
+  }
 
   return (
     <div className="App">
-      <button onClick={() => selectContract(1)}>First Voting</button>
-      <button onClick={() => selectContract(2)}>Second Voting</button>
+      <Navbar bg="dark" variant="dark" expand="lg">
+        <Container>
+          <Navbar.Brand href="#home">Voting App</Navbar.Brand>
+          <Navbar.Toggle aria-controls="navbar" />
+          <Navbar.Collapse id="navbar">
+            <Nav className="mr-auto">
+              <Nav.Link onClick={() => selectContract(1)}>First Voting</Nav.Link>
+              <Nav.Link onClick={() => selectContract(2)}>Second Voting</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-      { votingStatus ? (isConnected ? (<Connected 
-                      account = {account}
-                      candidates = {candidates}
-                      remainingTime = {remainingTime}
-                      number= {number}
-                      handleNumberChange = {handleNumberChange}
-                      voteFunction = {vote}
-                      showButton = {CanVote}/>) 
-                      
-                      : 
-                      
-                      (<Login connectWallet = {connectToMetamask}/>)) : (<Finished />)}
-      
+      {marketStatus ? (
+        isConnected ? (
+          <Connected
+            account={account}
+            stocks={stocks}
+            remainingTime={remainingTime}
+            number={number}
+            buyShares={buyShares}
+            handleNumberChange={handleNumberChange}
+            handleBuySharesChange={handleBuySharesChange}
+            buySharesFunction={vote}
+          />
+        ) : (
+          <Login connectWallet={connectToMetamask} />
+        )
+      ) : (
+        <Finished />
+      )}
     </div>
   );
 }

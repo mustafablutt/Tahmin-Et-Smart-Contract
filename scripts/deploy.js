@@ -2,19 +2,19 @@ const { ethers } = require("hardhat");
 require("dotenv").config({ path: "./.env2" });
 
 async function main() {
-  const Voting = await ethers.getContractFactory("Voting");
+  const StockMarket = await ethers.getContractFactory("StockMarket");
 
   // Start deployment, returning a promise that resolves to a contract object
-  const Voting_ = await Voting.deploy(["Mark", "Mike", "Henry", "Rock"], 90);
-  console.log("Contract address:", Voting_.address);
+  const StockMarket_ = await StockMarket.deploy(["Mark", "Mike", "Henry", "Rock"], 90);
+  console.log("Contract address:", StockMarket_.address);
 
   const provider = new ethers.providers.JsonRpcProvider(process.env.API_URL);
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
-    const Voting2 = await ethers.getContractFactory("Voting2");
-    const voting2Contract = await Voting2.connect(wallet).deploy(["Enes", "Berkay", "Fatih", "Mustafa"], 90);
+    const StockMarket2 = await ethers.getContractFactory("StockMarket2");
+    const Stock2Market = await StockMarket2.connect(wallet).deploy(["Enes", "Berkay", "Fatih", "Mustafa"], 90);
 
-    console.log("Contract address:", voting2Contract.address);
+    console.log("Contract address:", Stock2Market.address);
 
 }
 

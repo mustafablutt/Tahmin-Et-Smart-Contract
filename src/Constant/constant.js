@@ -1,11 +1,11 @@
-  const contractAddress = "0x90fDC46811c28280Bc7Fd9a34b3084B1c5b566dE";
+  const contractAddress = "0x25c224DcE1a5b4b82E1Bf1541Dd65BA80C5206d3";
 
   const contractAbi =[
     {
       "inputs": [
         {
           "internalType": "string[]",
-          "name": "_candidateNames",
+          "name": "_stockNames",
           "type": "string[]"
         },
         {
@@ -25,7 +25,7 @@
           "type": "string"
         }
       ],
-      "name": "addCandidate",
+      "name": "addStock",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -34,20 +34,38 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_stockIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_stocks",
+          "type": "uint256"
+        }
+      ],
+      "name": "buyShares",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
           "name": "",
           "type": "uint256"
         }
       ],
-      "name": "candidates",
+      "name": "customers",
       "outputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
           "internalType": "uint256",
-          "name": "voteCount",
+          "name": "",
           "type": "uint256"
         }
       ],
@@ -56,7 +74,7 @@
     },
     {
       "inputs": [],
-      "name": "getAllVotesOfCandiates",
+      "name": "getAllSharesOfStocks",
       "outputs": [
         {
           "components": [
@@ -67,13 +85,26 @@
             },
             {
               "internalType": "uint256",
-              "name": "voteCount",
+              "name": "shareCount",
               "type": "uint256"
             }
           ],
-          "internalType": "struct Voting.Candidate[]",
+          "internalType": "struct StockMarket.Stock[]",
           "name": "",
           "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMarketStatus",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -94,52 +125,7 @@
     },
     {
       "inputs": [],
-      "name": "getVotingStatus",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_candidateIndex",
-          "type": "uint256"
-        }
-      ],
-      "name": "vote",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "voters",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "votingEnd",
+      "name": "marketClose",
       "outputs": [
         {
           "internalType": "uint256",
@@ -152,11 +138,35 @@
     },
     {
       "inputs": [],
-      "name": "votingStart",
+      "name": "marketOpen",
       "outputs": [
         {
           "internalType": "uint256",
           "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "stocks",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "shareCount",
           "type": "uint256"
         }
       ],
@@ -165,13 +175,13 @@
     }
   ];
 
-  const contractAddress2 = "0x97746B3c4A608f615EF97838f4145293940b8A0f"
-  const contract2Abi = [
+  const contractAddress2 = "0xf2a0b399Dcdf1961341411B5d712561A042E9D09"
+  const contract2Abi =  [
     {
       "inputs": [
         {
           "internalType": "string[]",
-          "name": "_candidateNames",
+          "name": "_stockNames",
           "type": "string[]"
         },
         {
@@ -191,7 +201,7 @@
           "type": "string"
         }
       ],
-      "name": "addCandidate",
+      "name": "addStock",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -200,20 +210,38 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "_stockIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_stocks",
+          "type": "uint256"
+        }
+      ],
+      "name": "buyShares",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
           "name": "",
           "type": "uint256"
         }
       ],
-      "name": "candidates",
+      "name": "customers",
       "outputs": [
         {
-          "internalType": "string",
-          "name": "name",
-          "type": "string"
-        },
-        {
           "internalType": "uint256",
-          "name": "voteCount",
+          "name": "",
           "type": "uint256"
         }
       ],
@@ -222,7 +250,7 @@
     },
     {
       "inputs": [],
-      "name": "getAllVotesOfCandiates",
+      "name": "getAllSharesOfStocks",
       "outputs": [
         {
           "components": [
@@ -233,13 +261,26 @@
             },
             {
               "internalType": "uint256",
-              "name": "voteCount",
+              "name": "shareCount",
               "type": "uint256"
             }
           ],
-          "internalType": "struct Voting2.Candidate[]",
+          "internalType": "struct StockMarket2.Stock[]",
           "name": "",
           "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMarketStatus",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -260,52 +301,7 @@
     },
     {
       "inputs": [],
-      "name": "getVotingStatus",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_candidateIndex",
-          "type": "uint256"
-        }
-      ],
-      "name": "vote",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "voters",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "votingEnd",
+      "name": "marketClose",
       "outputs": [
         {
           "internalType": "uint256",
@@ -318,11 +314,35 @@
     },
     {
       "inputs": [],
-      "name": "votingStart",
+      "name": "marketOpen",
       "outputs": [
         {
           "internalType": "uint256",
           "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "stocks",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "shareCount",
           "type": "uint256"
         }
       ],
