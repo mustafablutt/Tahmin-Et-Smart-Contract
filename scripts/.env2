@@ -1,0 +1,3 @@
+API_URL = "https://volta-rpc.energyweb.org/"
+PRIVATE_KEY = "ab4231fde0140ca245727050a15587f9758fe512945dcb7da88c576ccb9988b3"
+CONTRACT_ADDRESS = ""

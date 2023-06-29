@@ -14,9 +14,9 @@
 }
 
 .login-button {
-  background-color: #007bff;
+  background-color: #747f8b;
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 0.8rem;
   border: none;
   border-radius: 0.3rem;
   padding: 1rem 2rem;
@@ -25,7 +25,7 @@
 }
 
 .login-button:hover {
-  background-color: #0069d9;
+  background-color: #a7acb2;
 }
 
 
